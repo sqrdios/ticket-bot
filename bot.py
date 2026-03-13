@@ -126,7 +126,7 @@ class CreateTicket(discord.ui.View):
 async def on_ready():
     print(f"Logged in as {bot.user}")
 
-    channel = bot.get_channel(1481479898353766562)
+    channel = bot.get_channel(1481492593048158331)
 
     if channel:
         await channel.send(
