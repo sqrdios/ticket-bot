@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
+import os
 
-TOKEN = "MTQ4MTcxOTQwODYwNTc5NDUyNg.GjECN_.kIsVgrsbMnvBQBMbWQgnaB-cRaDfutohokl_1I"
+TOKEN = os.getenv("TOKEN")
 STAFF_ROLE_ID = 1481491560532021279
 
 intents = discord.Intents.default()
@@ -115,6 +116,7 @@ async def ticketpanel(ctx):
         "Press the button below to open a recruitment ticket",
         view=CreateTicket()
     )
+
 
 
 bot.run(TOKEN)
