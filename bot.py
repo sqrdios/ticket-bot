@@ -2,8 +2,6 @@ import discord
 from discord.ext import commands
 import os
 TOKEN = os.getenv("TOKEN")
-
-TOKEN = "MTQ4MTcxOTQwODYwNTc5NDUyNg.GjECN_.kIsVgrsbMnvBQBMbWQgnaB-cRaDfutohokl_1I"
 STAFF_ROLE_IDS = [
     1481492592146255990,  # Admin
     1481492592146255989,  # LIDER 00
@@ -143,3 +141,4 @@ async def ticketpanel(ctx):
 
 
 bot.run(TOKEN)
+
