@@ -1,9 +1,17 @@
 import discord
 from discord.ext import commands
 import os
-
 TOKEN = os.getenv("TOKEN")
-STAFF_ROLE_ID = 1481491560532021279
+
+TOKEN = "MTQ4MTcxOTQwODYwNTc5NDUyNg.GjECN_.kIsVgrsbMnvBQBMbWQgnaB-cRaDfutohokl_1I"
+STAFF_ROLE_IDS = [
+    1481492592146255990,  # Admin
+    1481492592146255989,  # LIDER 00
+    1481492592146255988,   # 02
+    1481492592146255987,   # 03
+    1481492592146255986,   # SUB-LIDER 01
+    1481492592146255984   # Gerente de farm
+]
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -50,7 +58,7 @@ class TicketButtons(discord.ui.View):
     @discord.ui.button(label="Claim Ticket", style=discord.ButtonStyle.primary)
     async def claim_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
 
-        if STAFF_ROLE_ID not in [role.id for role in interaction.user.roles]:
+        if not any(role.id in STAFF_ROLE_IDS for role in interaction.user.roles):
             await interaction.response.send_message(
                 "❌ You are not allowed to claim tickets.", ephemeral=True
             )
@@ -73,7 +81,23 @@ class TicketButtons(discord.ui.View):
     @discord.ui.button(label="Close Ticket", style=discord.ButtonStyle.danger)
     async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
 
-        if STAFF_ROLE_ID not in [role.id for role in interaction.user.roles]:
+        if not any(role.id in STAFF_ROLE_IDS for role in interaction.user.roles):
+            await interaction.response.send_message(
+                "❌ You are not allowed to close tickets.", ephemeral=True
+            )
+            return
+
+        await interaction.message.delete()
+
+        await interaction.response.send_message(
+            "❌ Ticket closed", ephemeral=True
+        )
+
+
+    @discord.ui.button(label="Close Ticket", style=discord.ButtonStyle.danger)
+    async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
+
+        if not any(role.id in STAFF_ROLE_IDS for role in interaction.user.roles):
             await interaction.response.send_message(
                 "❌ You are not allowed to close tickets.", ephemeral=True
             )
@@ -116,7 +140,6 @@ async def ticketpanel(ctx):
         "Press the button below to open a recruitment ticket",
         view=CreateTicket()
     )
-
 
 
 bot.run(TOKEN)
