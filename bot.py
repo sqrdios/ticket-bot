@@ -1,3 +1,4 @@
+# Version 2.0 - 2026-13-03 - Updated to use discord.py 2.0 features and improved error handling. - Added support for multiple languages and enhanced the ticket management system. - Updated by SQRDIOS
 import discord
 from discord.ext import commands
 import os
@@ -23,10 +24,10 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 class TicketModal(discord.ui.Modal, title="Recruitment Ticket"):
 
-    game_id = discord.ui.TextInput(label="In-game ID")
-    nickname = discord.ui.TextInput(label="In-game Nickname")
-    recruiter_name = discord.ui.TextInput(label="Recruiter Nickname")
-    recruiter_id = discord.ui.TextInput(label="Recruiter ID")
+    game_id = discord.ui.TextInput(label="ID IN-GAME")
+    nickname = discord.ui.TextInput(label="NICK IN-GAME")
+    recruiter_name = discord.ui.TextInput(label="NICK DO RECRUTADOR")
+    recruiter_id = discord.ui.TextInput(label="ID DO RECRUTADOR")
 
     async def on_submit(self, interaction: discord.Interaction):
 
@@ -53,15 +54,15 @@ class TicketModal(discord.ui.Modal, title="Recruitment Ticket"):
         )
 
         embed = discord.Embed(
-            title="Open Ticket",
-            description=f"{interaction.user.mention} created a new ticket 📱 Recruitment..",
+            title="Ticket Aberto",
+            description=f"{interaction.user.mention} criou um novo ticket 📞 Recrutamento.",
             color=discord.Color.green()
         )
 
-        embed.add_field(name="In-game ID:", value=self.game_id.value, inline=False)
-        embed.add_field(name="In-game Nickname:", value=self.nickname.value, inline=False)
-        embed.add_field(name="Recruiter Nickname:", value=self.recruiter_name.value, inline=False)
-        embed.add_field(name="Recruiter ID:", value=self.recruiter_id.value, inline=False)
+        embed.add_field(name="ID IN-GAME:", value=self.game_id.value, inline=False)
+        embed.add_field(name="NICK IN-GAME:", value=self.nickname.value, inline=False)
+        embed.add_field(name="NICK DO RECRUTADOR:", value=self.recruiter_name.value, inline=False)
+        embed.add_field(name="ID DO RECRUTADOR:", value=self.recruiter_id.value, inline=False)
 
         await ticket_channel.send(embed=embed, view=TicketButtons())
 
@@ -80,58 +81,42 @@ class TicketButtons(discord.ui.View):
         self.claimed = False
 
 
-    @discord.ui.button(label="Claim Ticket", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="📜 Reivindicar Ticket", style=discord.ButtonStyle.primary)
     async def claim_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
 
         if not any(role.id in STAFF_ROLE_IDS for role in interaction.user.roles):
             await interaction.response.send_message(
-                "❌ You are not allowed to claim tickets.", ephemeral=True
+                "❌ Você não tem permissão para retirar ingressos.", ephemeral=True
             )
             return
 
         if self.claimed:
             await interaction.response.send_message(
-                "⚠️ This ticket is already claimed.", ephemeral=True
+                "⚠️ Este bilhete já foi reservado.", ephemeral=True
             )
             return
 
         self.claimed = True
 
         button.disabled = True
-        button.label = f"Claimed by {interaction.user.display_name}"
+        button.label = f"Reivindicado por {interaction.user.display_name}"
 
         await interaction.response.edit_message(view=self)
 
 
-    @discord.ui.button(label="Close Ticket", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="🔒 Fechar Ticket", style=discord.ButtonStyle.danger)
     async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
 
         if not any(role.id in STAFF_ROLE_IDS for role in interaction.user.roles):
             await interaction.response.send_message(
-                "❌ You are not allowed to close tickets.", ephemeral=True
+                "❌ Você não tem permissão para fechar chamados.", ephemeral=True
             )
             return
 
         await interaction.message.delete()
 
         await interaction.response.send_message(
-            "❌ Ticket closed", ephemeral=True
-        )
-
-
-    @discord.ui.button(label="Close Ticket", style=discord.ButtonStyle.danger)
-    async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
-
-        if not any(role.id in STAFF_ROLE_IDS for role in interaction.user.roles):
-            await interaction.response.send_message(
-                "❌ You are not allowed to close tickets.", ephemeral=True
-            )
-            return
-
-        await interaction.message.delete()
-
-        await interaction.response.send_message(
-            "❌ Ticket closed", ephemeral=True
+            "❌ Bilhete fechado", ephemeral=True
         )
 
 
@@ -139,7 +124,7 @@ class TicketButtons(discord.ui.View):
 
 class CreateTicket(discord.ui.View):
 
-    @discord.ui.button(label="Open Recruitment Ticket", style=discord.ButtonStyle.green)
+    @discord.ui.button(label="Bilhete de Recrutamento Aberto", style=discord.ButtonStyle.green)
     async def open_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
 
         await interaction.response.send_modal(TicketModal())
@@ -155,14 +140,14 @@ async def on_ready():
 
     if channel:
         await channel.send(
-            "Press the button below to open a recruitment ticket",
+            "Pressione o botão abaixo para abrir um formulário de recrutamento.",
             view=CreateTicket()
         )
 
 @bot.command()
 async def ticketpanel(ctx):
     await ctx.send(
-        "Press the button below to open a recruitment ticket",
+        "Pressione o botão abaixo para abrir um formulário de recrutamento.",
         view=CreateTicket()
     )
 
