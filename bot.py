@@ -1,7 +1,11 @@
 import discord
 from discord.ext import commands
 import os
+import random
 TOKEN = os.getenv("TOKEN")
+
+CATEGORY_ID = 1481870388073070632  # Ticket category
+
 STAFF_ROLE_IDS = [
     1481492592146255990,  # Admin
     1481492592146255989,  # LIDER 00
@@ -26,6 +30,28 @@ class TicketModal(discord.ui.Modal, title="Recruitment Ticket"):
 
     async def on_submit(self, interaction: discord.Interaction):
 
+        guild = interaction.guild
+        category = discord.utils.get(guild.categories, id=CATEGORY_ID)
+
+        random_id = random.randint(1000, 9999)
+
+        channel_name = f"{self.recruiter_name.value}-{random_id}".lower().replace(" ", "-")
+
+        overwrites = {
+        guild.default_role: discord.PermissionOverwrite(view_channel=False),
+        interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True)
+        }
+
+        for role_id in STAFF_ROLE_IDS:
+            role = guild.get_role(role_id)
+            overwrites[role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
+
+        ticket_channel = await guild.create_text_channel(
+            name=channel_name,
+            category=category,
+            overwrites=overwrites
+        )
+
         embed = discord.Embed(
             title="Open Ticket",
             description=f"{interaction.user.mention} created a new ticket 📱 Recruitment..",
@@ -37,10 +63,11 @@ class TicketModal(discord.ui.Modal, title="Recruitment Ticket"):
         embed.add_field(name="Recruiter Nickname:", value=self.recruiter_name.value, inline=False)
         embed.add_field(name="Recruiter ID:", value=self.recruiter_id.value, inline=False)
 
-        await interaction.channel.send(embed=embed, view=TicketButtons())
+        await ticket_channel.send(embed=embed, view=TicketButtons())
 
         await interaction.response.send_message(
-            "✅ Ticket submitted!", ephemeral=True
+            f"✅ Ticket created: {ticket_channel.mention}",
+            ephemeral=True
         )
 
 
@@ -141,4 +168,3 @@ async def ticketpanel(ctx):
 
 
 bot.run(TOKEN)
-
