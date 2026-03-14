@@ -2,7 +2,6 @@
 import discord
 from discord.ext import commands
 import os
-import random
 TOKEN = os.getenv("TOKEN")
 
 CATEGORY_ID = 1481870388073070632  # Ticket category
@@ -34,9 +33,7 @@ class TicketModal(discord.ui.Modal, title="Recruitment Ticket"):
         guild = interaction.guild
         category = discord.utils.get(guild.categories, id=CATEGORY_ID)
 
-        random_id = random.randint(1000, 9999)
-
-        channel_name = f"{self.recruiter_name.value}-{random_id}".lower().replace(" ", "-")
+        channel_name = f"{self.recruiter_name.value}-{self.recruiter_id.value}".lower().replace(" ", "-")
 
         overwrites = {
         guild.default_role: discord.PermissionOverwrite(view_channel=False),
@@ -124,7 +121,7 @@ class TicketButtons(discord.ui.View):
 
 class CreateTicket(discord.ui.View):
 
-    @discord.ui.button(label="Bilhete de Recrutamento Aberto", style=discord.ButtonStyle.green)
+    @discord.ui.button(label="Abrir ticket de recrutamento", style=discord.ButtonStyle.green)
     async def open_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
 
         await interaction.response.send_modal(TicketModal())
